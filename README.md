@@ -5,8 +5,8 @@ Eval is a simple, header-only, expression parser.
 ## features
 
 * basic operators `* / + - ^ %`
-	- unaries `+ -`
-* in-place variables
+	- unary `+ -`
+* variables
 * decimals
 * well-documented
 * tests
@@ -35,7 +35,6 @@ C++11 compiler
 #include "eval.h"
 
 assert(eval("3*2 + 4") == 10);
-
 ```
 
 ### custom vars
@@ -46,13 +45,11 @@ assert(eval("3*2 + 4") == 10);
 std::map<std::string, double> vars;
 vars["myvar"] = 2;
 assert(eval("3*myvar + 4", vars) == 10);
-
 ```
 
 ### error handling
 
 ```
-
 #include "eval.h"
 
 try
