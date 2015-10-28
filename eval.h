@@ -164,9 +164,32 @@ namespace _eval
       {
         // At the start of a new context, reset any context flags.
         if (c == '(') {number.inContext = false;}
-        // If a valid unary (+/-) is before any numbers in a context (e.g. (-2 + 3)),
-        // prepend an explicit 0 as an easy solution.
-        else if (Op::validUnary(c) && str.empty() && !number.inContext) {tokens.push_back("0");}
+        else if (Op::validUnary(c))
+        {
+          // Operator collapsing:
+          bool modifiedOp = false;
+          char newOp = '?';
+          // Check the built tokens: we know that previous operators are stored
+          // there, not the str since single char tokens are pushed immediately.
+          // Check that there isn't anything currently being built in the string,
+          // which would mean that there's nothing to collapse (need back to back
+          // operators).
+          if (!tokens.empty() && str.empty())
+          {
+            if ((c == '-' && (tokens.back().compare("+") == 0)) || (c == '+' && (tokens.back().compare("-") == 0))) {tokens.pop_back(); newOp = '-'; modifiedOp = true;}
+            else if (c == '-' && (tokens.back().compare("-") == 0)) {tokens.pop_back(); newOp = '+'; modifiedOp = true;}
+            else if (c == '+' && (tokens.back().compare("+") == 0)) {tokens.pop_back();}
+          }
+
+          // If a valid unary (+/-) is before any numbers in a context (e.g. (-2 + 3)),
+          // prepend an explicit 0 as an easy solution.
+          if (str.empty() && !number.inContext)
+          {
+            tokens.push_back("0");
+            number.inContext = true;
+          }
+          if (modifiedOp) {SINGLE_CHAR_IMPL(newOp);continue;}
+        }
         SINGLE_CHAR_IMPL(c);
       }
       // Possible multi-character tokens: numbers and vars
@@ -188,14 +211,8 @@ namespace _eval
             return valid;
           });
         }
-        else if (Type::isLetter(c))
-        {
-          MULTI_CHAR_IMPL(c, [&](){return Type::containsLettersOnly(str);});
-        }
-        else
-        {
-          FINISH_PREV();
-        }
+        else if (Type::isLetter(c)) {MULTI_CHAR_IMPL(c, [&](){return Type::containsLettersOnly(str);});}
+        else {FINISH_PREV();}
       }
     }
 
