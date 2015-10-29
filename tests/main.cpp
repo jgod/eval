@@ -54,40 +54,43 @@ TEST_CASE("operators")
   SECTION("^(power) operator") {REQUIRE(eval("2^3") == 8);}
   SECTION("% operator") {REQUIRE(eval("5%2") == 1);}
 
-  SECTION("unary -")
+  SECTION("unaries")
   {
-    SECTION("basic") {REQUIRE(eval("-1 + 3") == 2);}
-    SECTION("further in parens") {REQUIRE(eval("((-5+3) * 8)") == -16);}
-    SECTION("outside parens") {REQUIRE(eval("-(3*2)") == -6);}
-    SECTION("in several contexts") {REQUIRE(eval("((-5+3) * (-8 + (-3 + 1)))") == 20);}
-  }
-
-  SECTION("unary +")
-  {
-    SECTION("basic") {REQUIRE(eval("+1 + 3") == 4);}
-    SECTION("further in parens") {REQUIRE(eval("((+5+3) * 8)") == 64);}
-    SECTION("outside parens") {REQUIRE(eval("+(3*2)") == 6);}
-    SECTION("in several contexts") {REQUIRE(eval("((+5+3) * (+8 + (+3 + 1)))") == 96);}
-  }
-
-  SECTION("collapsing")
-  {
-    SECTION("in middle of expression")
+    SECTION("-")
     {
-      REQUIRE(eval("1 + - 3") == -2);
-      REQUIRE(eval("1 - + 3") == -2);
-      REQUIRE(eval("1 - - 3") == 4);
-      REQUIRE(eval("1 + + 3") == 4);
+      SECTION("basic") {REQUIRE(eval("-1 + 3") == 2);}
+      SECTION("further in parens") {REQUIRE(eval("((-5+3) * 8)") == -16);}
+      SECTION("outside parens") {REQUIRE(eval("-(3*2)") == -6);}
+      SECTION("in several contexts") {REQUIRE(eval("((-5+3) * (-8 + (-3 + 1)))") == 20);}
     }
 
-    SECTION("in front of expression")
+    SECTION("+")
     {
-      REQUIRE(eval("+- 3") == -3);
-      REQUIRE(eval("-+ 3") == -3);
-      REQUIRE(eval("-- 3") == 3);
-      REQUIRE(eval("++ 3") == 3);
-      REQUIRE(eval("++(3-2)") == 1);
-      REQUIRE(eval("+-(3-2)") == -1);
+      SECTION("basic") {REQUIRE(eval("+1 + 3") == 4);}
+      SECTION("further in parens") {REQUIRE(eval("((+5+3) * 8)") == 64);}
+      SECTION("outside parens") {REQUIRE(eval("+(3*2)") == 6);}
+      SECTION("in several contexts") {REQUIRE(eval("((+5+3) * (+8 + (+3 + 1)))") == 96);}
+    }
+
+    SECTION("collapsing")
+    {
+      SECTION("in middle of expression")
+      {
+        REQUIRE(eval("1 + - 3") == -2);
+        REQUIRE(eval("1 - + 3") == -2);
+        REQUIRE(eval("1 - - 3") == 4);
+        REQUIRE(eval("1 + + 3") == 4);
+      }
+
+      SECTION("in front of expression")
+      {
+        REQUIRE(eval("+- 3") == -3);
+        REQUIRE(eval("-+ 3") == -3);
+        REQUIRE(eval("-- 3") == 3);
+        REQUIRE(eval("++ 3") == 3);
+        REQUIRE(eval("++(3-2)") == 1);
+        REQUIRE(eval("+-(3-2)") == -1);
+      }
     }
   }
 }
