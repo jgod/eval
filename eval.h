@@ -100,7 +100,17 @@ namespace _eval { // The implementation isn't really designed to be exposed.
 
     bool isRHS(const std::string &s) {return s == "^";}
     bool isLHS(const std::string &s) {return !isRHS(s);}
-    bool validUnary(const char c) {return c == '-' || c == '+';}
+    bool isUnary(const char c) {return c == '-' || c == '+';}
+  }
+
+#pragma mark - Utils
+  std::string replaceAll(std::string s, const std::string &search, const std::string &r) {
+    size_t pos = 0;
+    while ((pos = s.find(search, pos)) != std::string::npos) {
+      s.replace(pos, search.length(), r);
+      pos += r.length();
+    }
+    return s;
   }
 
 #pragma mark - Evaluation
@@ -128,31 +138,22 @@ namespace _eval { // The implementation isn't really designed to be exposed.
       else {FINISH_PREV(); toks.emplace_back(std::string(1, c));}
     };
 
+    // Operator collapsing:
+    // Unary operators next to binary operators of the same symbol can easily be
+    // rewritten throughout the whole string all at once.
+    exp = replaceAll(exp, "+-", "-");
+    exp = replaceAll(exp, "-+", "-");
+    exp = replaceAll(exp, "++", "+");
+    exp = replaceAll(exp, "--", "+");
+
     for (const auto c : exp) { if (c == ' ') continue;
       // Single-character only tokens: operators and parenthesis
       if (Type::isOperator(c) || Type::isParenthesis(c)) {
         if (c == '(') {number.inContext = false;} // Starting new context, reset any flags.
-        else if (Op::validUnary(c)) {
-          // Operator collapsing:
-          bool modifiedOp = false;
-          char newOp = c;
-          // Check the built tokens: we know that previous operators are stored
-          // there, not the string since single char tokens are pushed immediately.
-          // Check that there isn't anything currently being built in the string,
-          // which would mean that there's nothing to collapse (need back to back
-          // operators).
-          if (!toks.empty() && s.empty()) {
-            if ((c == '-' && (toks.back().compare("+") == 0))
-              || (c == '+' && (toks.back().compare("-") == 0))) {toks.pop_back(); newOp = '-'; modifiedOp = true;}
-            else if (c == '-' && (toks.back().compare("-") == 0)) {toks.pop_back(); newOp = '+'; modifiedOp = true;}
-            else if (c == '+' && (toks.back().compare("+") == 0)) {toks.pop_back();}
-          }
-
+        else if (Op::isUnary(c) && s.empty() && !number.inContext) {
           // If a valid unary (+/-) is before any numbers in a context (e.g. (-2 + 3)),
           // prepend an explicit 0 as an easy solution.
-          if (s.empty() && !number.inContext) {toks.push_back("0"); number.inContext = true;}
-
-          if (modifiedOp) {SINGLE_CHAR_IMPL(newOp); continue;}
+          toks.push_back("0"); number.inContext = true;
         }
         SINGLE_CHAR_IMPL(c);
       } else {
