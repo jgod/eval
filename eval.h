@@ -115,6 +115,23 @@ namespace _eval { // The implementation isn't really designed to be exposed.
 
 #pragma mark - Evaluation
   /**
+   Rewrites an expression to something that can be tokenized easier.
+
+   @param[in] exp
+   @returns expression
+   */
+  std::string rewriteExpression(std::string exp) {
+    // Operator collapsing:
+    // Unary operators next to binary operators of the same symbol can easily be
+    // rewritten throughout the whole string all at once.
+    exp = replaceAll(exp, "+-", "-");
+    exp = replaceAll(exp, "-+", "-");
+    exp = replaceAll(exp, "++", "+");
+    exp = replaceAll(exp, "--", "+");
+    return exp;
+  }
+
+  /**
    Gets tokens from an expression.
 
    @see what's supported by reading the tests
@@ -137,14 +154,6 @@ namespace _eval { // The implementation isn't really designed to be exposed.
       if (s.empty() || (!s.empty() && validates())) s += c;
       else {FINISH_PREV(); toks.emplace_back(std::string(1, c));}
     };
-
-    // Operator collapsing:
-    // Unary operators next to binary operators of the same symbol can easily be
-    // rewritten throughout the whole string all at once.
-    exp = replaceAll(exp, "+-", "-");
-    exp = replaceAll(exp, "-+", "-");
-    exp = replaceAll(exp, "++", "+");
-    exp = replaceAll(exp, "--", "+");
 
     for (const auto c : exp) { if (c == ' ') continue;
       // Single-character only tokens: operators and parenthesis
@@ -294,7 +303,7 @@ namespace _eval { // The implementation isn't really designed to be exposed.
 _eval::ValType eval(std::string str, _eval::ValMap vars = _eval::ValMap()) {
   str.erase(std::remove(std::begin(str), std::end(str), ' '), std::end(str)); // Remove whitespace.
   if (str.empty()) return 0;
-  auto q = _eval::read(str, vars);
+  auto q = _eval::read(_eval::rewriteExpression(str), vars);
   return _eval::queue(q);
 }
 #endif /* eval_h */
