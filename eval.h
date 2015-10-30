@@ -135,7 +135,7 @@ namespace _eval { // The implementation isn't really designed to be exposed.
    Gets tokens from an expression.
 
    @see what's supported by reading the tests
-   @param exp Source string to evaluate
+   @param[in] exp Source string to evaluate
    @returns tokens
    */
   const Tokens tokenize(std::string exp) {
@@ -192,8 +192,8 @@ namespace _eval { // The implementation isn't really designed to be exposed.
    Reads a string into RPN, following the Shunting-yard algorithm.
 
    @see [Shunting-yard](https://en.wikipedia.org/wiki/Shunting-yard_algorithm )
-   @param str Source string to evaluate
-   @param vars Map of variables to look up otherwise undefined tokens (optional)
+   @param[in] str Source string to evaluate
+   @param[in] vars Map of variables to look up otherwise undefined tokens (optional)
    @returns Output queue
    */
   Queue read(const std::string &str, ValMap vars = ValMap())
@@ -258,7 +258,7 @@ namespace _eval { // The implementation isn't really designed to be exposed.
    Evaluates an RPN expression.
 
    @see [Postfix algorithm](https://en.wikipedia.org/wiki/Reverse_Polish_notation#Postfix_algorithm )
-   @param queue
+   @param[out] queue
    @returns ValType
    */
   ValType queue(Queue &q) {
@@ -296,8 +296,8 @@ namespace _eval { // The implementation isn't really designed to be exposed.
  Evaluates a string by tokenizing, creating an RPN stack, and evaluating it.
  Note that this is a free function.
 
- @param str
- @param vars Custom in-place variables (optional)
+ @param[in] str
+ @param[in] vars Custom in-place variables (optional)
  @returns result
  */
 _eval::ValType eval(std::string str, _eval::ValMap vars = _eval::ValMap()) {
