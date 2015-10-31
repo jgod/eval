@@ -1,5 +1,5 @@
 CXX = clang++
-CXXFLAGS = -std=c++11 -stdlib=libc++
+CXXFLAGS = -std=c++11 -stdlib=libc++ -Werror -pedantic-errors
 OUTDIR = ./build
 TESTS_DEPS = tests/main.cpp
 
