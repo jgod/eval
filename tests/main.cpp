@@ -12,11 +12,20 @@
 
 double evalWithVar(const std::string &str,
                    const std::string &var,
-                   const double val)
+                   const _eval::Number val)
 {
-  std::map<std::string, double> vars;
+  _eval::VarMap vars;
   vars[var] = val;
   return eval(str, vars);
+}
+
+double evalWithFn(const std::string &str,
+                  const std::string &fnName,
+                  const _eval::Number val)
+{
+  _eval::FnMap fns;
+  fns[fnName] = [=](_eval::FnArgs args) {return val;};
+  return eval(str, _eval::VarMap(), fns);
 }
 
 TEST_CASE("basic evaluation")
@@ -72,7 +81,7 @@ TEST_CASE("operators")
       SECTION("in several contexts") {REQUIRE(eval("((+5+3) * (+8 + (+3 + 1)))") == 96);}
     }
 
-    SECTION("collapsing")
+    SECTION("rewrite adjacent")
     {
       SECTION("in middle of expression")
       {
@@ -95,4 +104,36 @@ TEST_CASE("operators")
   }
 }
 
-TEST_CASE("other symbols") {SECTION("parenthesis work") {REQUIRE(eval("((3*(2-(3))*4()))()") == -12);}}
+TEST_CASE("other symbols")
+{
+  SECTION("parenthesis work") {REQUIRE(eval("((3*(2-(3))*4()))()") == -12);}
+}
+
+TEST_CASE("functions")
+{
+  SECTION("no args") {REQUIRE(evalWithFn("function()", "function", 1) == 1);}
+  SECTION("builtins")
+  {
+    SECTION("var") {SECTION("pi") {REQUIRE(floor(eval("pi")*100 + 0.5f)/100.00 == 3.14);}}
+    SECTION("functions")
+    {
+      SECTION("math")
+      {
+        SECTION("abs") {REQUIRE(eval("abs(-3)") == 3);}
+        SECTION("sqrt") {REQUIRE(floor(eval("sqrt(2)")*100 + 0.5f)/100.00 == 1.41);}
+        SECTION("cbrt") {REQUIRE(eval("cbrt(27)") == 3);}
+        SECTION("sin") {REQUIRE(eval("sin(pi)") == 0);}
+        SECTION("cos") {REQUIRE(eval("cos(pi)") == -1);}
+        SECTION("tan") {REQUIRE(eval("tan(pi)") == 0);}
+        SECTION("asin") {REQUIRE(eval("asin(0)") == 0);}
+        SECTION("acos") {REQUIRE(eval("acos(1)") == 0);}
+        SECTION("atan") {REQUIRE(eval("atan(0)") == 0);}
+        SECTION("floor") {REQUIRE(eval("floor(1.2)") == 1);}
+        SECTION("ceil") {REQUIRE(eval("ceil(1.8)") == 2);}
+        SECTION("trunc") {REQUIRE(eval("trunc(2.7)") == 2);}
+        SECTION("round") {REQUIRE(eval("round(2.6)") == 3);}
+        SECTION("hypot") {REQUIRE(eval("hypot(3, 4)") == 5);}
+      }
+    }
+  }
+}
