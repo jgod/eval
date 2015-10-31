@@ -24,7 +24,7 @@ double evalWithFn(const std::string &str,
                   const _eval::Number val)
 {
   _eval::FnMap fns;
-  fns[fnName] = [=](_eval::FnArgs args) {return val;};
+  fns[fnName] = [=](_eval::FnArgs) {return val;};
   return eval(str, _eval::VarMap(), fns);
 }
 
