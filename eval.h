@@ -113,7 +113,6 @@ namespace _eval { // Make it clear that this is an implementation.
 
 #pragma mark - Type Checking
   namespace Type {
-    std::string toString(const Number n) {return std::to_string(n);}
     Token toToken(const Number n) {return std::to_string(n);}
     Number toNumber(const BaseVal &s) {return std::stod(s);}
     bool isNumber(const Token &s) {
@@ -216,7 +215,7 @@ namespace _eval { // Make it clear that this is an implementation.
     // All multi-character tokens are built the same way, the only thing that
     // differs is how the token should be validated.
     const auto MULTI_CHAR_IMPL = [&](const SubToken c, std::function<bool()> validates) {
-      if (wip.empty() || (!wip.empty() && validates())) wip += c;
+      if (wip.empty() || validates()) wip += c;
       else {FINISH_PREV(); toks.emplace_back(Token(1, c));}
     };
 
