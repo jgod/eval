@@ -116,7 +116,7 @@ namespace _eval { // Make it clear that this is an implementation.
     Token toToken(const Number n) {return std::to_string(n);}
     Number toNumber(const BaseVal &s) {return std::stod(s);}
     bool isNumber(const Token &s) {
-      if (s.empty()) {return false;}
+      if (s.empty()) return false;
       // The most common case is whole numbers (where every char is a digit).
       auto it = std::find_if(std::begin(s), std::end(s), [](const SubToken c) {return !std::isdigit(c);});
       // If it's not a number by that definition, then try casting it to a double.
@@ -154,8 +154,7 @@ namespace _eval { // Make it clear that this is an implementation.
   }
 
 #pragma mark - Builtins
-  namespace Builtins
-  {
+  namespace Builtins {
     // Vars
     Number pi() {return atan(1.0) * 4.0;}
     // Functions
@@ -261,8 +260,7 @@ namespace _eval { // Make it clear that this is an implementation.
    @param[in] fns Map of functions to look up (optional)
    @returns Output queue
    */
-  Queue read(const std::string &str, VarMap vars = VarMap(), FnMap fns = FnMap())
-  {
+  Queue read(const std::string &str, VarMap vars = VarMap(), FnMap fns = FnMap()) {
     Queue q;
     std::stack<Token> opStack;
     auto tokens = tokenize(str);
