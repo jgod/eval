@@ -4,7 +4,7 @@ Eval is a simple, header-only, expression parser for C++.
 
 ## features
 
-* easy to integrate
+* easy to integrate - just include `eval.h`
 * simple API: `eval("your expression", ?vars, ?functions)`
 * operators `* / + - ^ %`
 * numbers and strings
