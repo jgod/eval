@@ -390,7 +390,6 @@ namespace _eval { // Make it clear that this is an implementation.
 
 /**
  Evaluates a string by tokenizing, creating an RPN stack, and evaluating it.
- Note that this is a free function.
 
  @param[in] str
  @param[in] vars Custom in-place variables (optional)
