@@ -98,12 +98,12 @@ namespace _eval { // Make it clear that this is an implementation.
   typedef std::vector<Token> Tokens;
   //
 
-  typedef struct {
+  struct NumberFlags {
     // Whether a number already exists in the context. This is so we can handle first numbers with prepended +/-.
     bool inContext = false;
     // Whether we've encountered a decimal point, since there can only be one per number.
     bool hasDecimal = false;
-  } NumberFlags;
+  };
 
   // "Function" impl (implementer has to do a bit of work, doesn't autobind to C++)
   typedef BaseVal ArgType; // Args must derive from the base type
