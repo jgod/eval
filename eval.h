@@ -266,7 +266,7 @@ namespace _eval { // Make it clear that this is an implementation.
     auto tokens = tokenize(str);
 
     // Function handling
-    std::string fnToInvoke = "";
+    std::string fnToInvoke;
     bool expectingArg = false;
     FnArgs fnArgs;
 
