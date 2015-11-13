@@ -62,7 +62,7 @@ std::domain_error("Function "#fn" has wrong number of arguments! Expected " + st
 #define EVAL_CHECK_ARG_NUMBER(idx) if (!Type::isNumber(args[idx])) {throw EVAL_INVALID_ARG_TYPE(args[idx]);}
 #define EVAL_ARG_NUMBER(idx) Type::toNumber(args[idx]) // Cast value at index to number
 #define EVAL_BIND_INCL_FN(name) fns[#name] = std::bind(&_eval::Builtins:: name , std::placeholders::_1); // Bind an included function
-#define EVAL_DEF_INCL_FN(name) Number name(FnArgs args) {EVAL_FN_IMPL_NUMBER(#name, std:: name);} // Define an included function
+#define EVAL_DEF_INCL_FN(name) inline Number name(FnArgs args) {EVAL_FN_IMPL_NUMBER(#name, std:: name);} // Define an included function
 #define EVAL_FN_IMPL_NUMBER(name, fn) \
 if (args.empty()) {throw EVAL_INVALID_FN_NUMBER_ARGS(name, 1, 0);} \
 else if (args.size() > 1) {throw EVAL_INVALID_FN_NUMBER_ARGS(name, 1, args.size());} \
@@ -113,9 +113,9 @@ namespace _eval { // Make it clear that this is an implementation.
 
 #pragma mark - Type Checking
   namespace Type {
-    Token toToken(const Number n) {return std::to_string(n);}
-    Number toNumber(const BaseVal &s) {return std::stod(s);}
-    bool isNumber(const Token &s) {
+    inline Token toToken(const Number n) {return std::to_string(n);}
+    inline Number toNumber(const BaseVal &s) {return std::stod(s);}
+    inline bool isNumber(const Token &s) {
       if (s.empty()) return false;
       // The most common case is whole numbers (where every char is a digit).
       auto it = std::find_if(std::begin(s), std::end(s), [](const unsigned char c) {return !std::isdigit(c);});
@@ -125,49 +125,49 @@ namespace _eval { // Make it clear that this is an implementation.
       return true;
     }
 
-    bool isNumber(const SubToken c) {return isNumber(Token(1, c));}
-    bool isLetter(const SubToken c) {return std::isalpha(c);}
-    bool containsLettersOnly(const Token &s) {
+    inline bool isNumber(const SubToken c) {return isNumber(Token(1, c));}
+    inline bool isLetter(const SubToken c) {return std::isalpha(c);}
+    inline bool containsLettersOnly(const Token &s) {
       return std::find_if(std::begin(s), std::end(s), [](const SubToken c) {return !std::isalpha(c);}) == std::end(s);
     }
-    bool isOperator(const Token &s) {return !s.empty() && ((s=="+")||(s=="-")||(s=="*")||(s=="/")||(s=="^")||(s=="%"));}
-    bool isOperator(const SubToken c) {return isOperator(Token(1, c));}
-    bool isParenthesis(const Token &s) {return s == "(" || s == ")";}
-    bool isParenthesis(const SubToken c) {return isParenthesis(Token(1, c));}
-    bool isFunctionSeperator(const Token &s) {return s == ",";}
-    bool isFunctionSeperator(const SubToken c) {return isFunctionSeperator(Token(1, c));}
+    inline bool isOperator(const Token &s) {return !s.empty() && ((s=="+")||(s=="-")||(s=="*")||(s=="/")||(s=="^")||(s=="%"));}
+    inline bool isOperator(const SubToken c) {return isOperator(Token(1, c));}
+    inline bool isParenthesis(const Token &s) {return s == "(" || s == ")";}
+    inline bool isParenthesis(const SubToken c) {return isParenthesis(Token(1, c));}
+    inline bool isFunctionSeperator(const Token &s) {return s == ",";}
+    inline bool isFunctionSeperator(const SubToken c) {return isFunctionSeperator(Token(1, c));}
   }
 
 #pragma mark - Operator Checking
   namespace Op {
-    int getPriority(const OpType &s) {
+    inline int getPriority(const OpType &s) {
       if (s == "*" || s == "/" || s == "%") return 3;
       else if (s == "+" || s == "-") return 2;
       else if (s == "^") return 4;
       return -1;
     }
 
-    bool isRHS(const OpType &s) {return s == "^";}
-    bool isLHS(const OpType &s) {return !isRHS(s);}
-    bool isUnary(const OpType &s) {return s == "-" || s == "+";}
-    bool isUnary(const SubToken c) {return isUnary(Token(1, c));}
+    inline bool isRHS(const OpType &s) {return s == "^";}
+    inline bool isLHS(const OpType &s) {return !isRHS(s);}
+    inline bool isUnary(const OpType &s) {return s == "-" || s == "+";}
+    inline bool isUnary(const SubToken c) {return isUnary(Token(1, c));}
   }
 
 #pragma mark - Builtins
   namespace Builtins {
     // Vars
-    Number pi() {return atan(1.0) * 4.0;}
+    inline Number pi() {return atan(1.0) * 4.0;}
     // Functions
     EVAL_DEF_INCL_FN(abs);
     EVAL_DEF_INCL_FN(sqrt); EVAL_DEF_INCL_FN(cbrt);
     EVAL_DEF_INCL_FN(sin); EVAL_DEF_INCL_FN(cos); EVAL_DEF_INCL_FN(tan);
     EVAL_DEF_INCL_FN(asin); EVAL_DEF_INCL_FN(acos); EVAL_DEF_INCL_FN(atan);
     EVAL_DEF_INCL_FN(floor); EVAL_DEF_INCL_FN(ceil); EVAL_DEF_INCL_FN(trunc); EVAL_DEF_INCL_FN(round);
-    Number hypot(FnArgs args) {EVAL_FN_IMPL_2NUMBERS("hypot", std::hypot);}
+    inline Number hypot(FnArgs args) {EVAL_FN_IMPL_2NUMBERS("hypot", std::hypot);}
   }
 
 #pragma mark - Utils
-  std::string replaceAll(std::string s, const std::string &search, const std::string &r) {
+  inline std::string replaceAll(std::string s, const std::string &search, const std::string &r) {
     size_t pos = 0;
     while ((pos = s.find(search, pos)) != std::string::npos) {
       s.replace(pos, search.length(), r);
@@ -183,7 +183,7 @@ namespace _eval { // Make it clear that this is an implementation.
    @param[in] exp
    @returns expression
    */
-  std::string rewriteExpression(std::string exp) {
+  inline std::string rewriteExpression(std::string exp) {
     // Rewriting adjacent operators:
     // Unary operators next to binary operators of the same symbol can easily be
     // rewritten throughout the whole string all at once.
@@ -201,7 +201,7 @@ namespace _eval { // Make it clear that this is an implementation.
    @param[in] exp Source string to evaluate
    @returns tokens
    */
-  const Tokens tokenize(std::string exp) {
+  inline const Tokens tokenize(std::string exp) {
     Tokens toks;
     Token wip = ""; // Re-use this string to build multi-character tokens between iterations.
     NumberFlags number; // Numbers have edge cases that need to be tracked while we're parsing.
@@ -260,7 +260,7 @@ namespace _eval { // Make it clear that this is an implementation.
    @param[in] fns Map of functions to look up (optional)
    @returns Output queue
    */
-  Queue read(const std::string &str, VarMap vars = VarMap(), FnMap fns = FnMap()) {
+  inline Queue read(const std::string &str, VarMap vars = VarMap(), FnMap fns = FnMap()) {
     Queue q;
     std::stack<Token> opStack;
     auto tokens = tokenize(str);
@@ -341,7 +341,7 @@ namespace _eval { // Make it clear that this is an implementation.
    @param[out] queue
    @returns Number
    */
-  Number queue(Queue &q) {
+  inline Number queue(Queue &q) {
     std::stack<Number> valStack;
 
     while (!q.empty()) { // While there are input tokens left, read the next token from input.
@@ -377,7 +377,7 @@ namespace _eval { // Make it clear that this is an implementation.
    @param[out] vars
    @param[out] fns
    */
-  void bindBuiltins(_eval::VarMap &vars, _eval::FnMap &fns) {
+  inline void bindBuiltins(_eval::VarMap &vars, _eval::FnMap &fns) {
     vars["pi"] = _eval::Builtins::pi();
     EVAL_BIND_INCL_FN(abs);
     EVAL_BIND_INCL_FN(sqrt); EVAL_BIND_INCL_FN(cbrt);
