@@ -118,7 +118,7 @@ namespace _eval { // Make it clear that this is an implementation.
     bool isNumber(const Token &s) {
       if (s.empty()) return false;
       // The most common case is whole numbers (where every char is a digit).
-      auto it = std::find_if(std::begin(s), std::end(s), [](const SubToken c) {return !std::isdigit(c);});
+      auto it = std::find_if(std::begin(s), std::end(s), [](const unsigned char c) {return !std::isdigit(c);});
       // If it's not a number by that definition, then try casting it to a double.
       // If it's castable, then it's a number. This is to support decimals.
       if (it != std::end(s)) try {toNumber(s); return true;} catch (const std::exception&) {return false;}
