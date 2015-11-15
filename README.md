@@ -22,6 +22,7 @@ C++11 compiler
 
 ```cpp
 #include "eval.h"
+using namespace jgod;
 
 assert(eval("3*2 + 4") == 10);
 ```
@@ -29,8 +30,6 @@ assert(eval("3*2 + 4") == 10);
 ### vars
 
 ```cpp
-#include "eval.h"
-
 std::map<std::string, double> vars;
 vars["myvar"] = 2;
 assert(eval("3*myvar + 4", vars) == 10);
@@ -39,8 +38,6 @@ assert(eval("3*myvar + 4", vars) == 10);
 ### error handling
 
 ```cpp
-#include "eval.h"
-
 try {return eval("3.14q59");}
 catch (const std::invalid_argument &e) {...}
 ```
