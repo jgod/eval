@@ -78,7 +78,7 @@ return fn(EVAL_ARG_NUMBER(0), EVAL_ARG_NUMBER(1));
 #pragma mark
 ////
 
-namespace _eval { // Make it clear that this is an implementation.
+namespace jgod { namespace _eval { // Make it clear that this is an implementation.
 #pragma mark - Types
   // Strings are chosen as the base value type since it can both a string and a number (through casting).
   typedef std::string BaseVal;
@@ -404,5 +404,5 @@ _eval::Number eval(std::string str,
   _eval::bindBuiltins(vars, fns);
   auto q = _eval::read(_eval::rewriteExpression(str), vars, fns);
   return _eval::queue(q);
-}
+}}
 #endif /* eval_h */
