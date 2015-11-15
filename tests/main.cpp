@@ -9,6 +9,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "../eval.h"
+using namespace jgod;
 
 double evalWithVar(const std::string &str,
                    const std::string &var,
