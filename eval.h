@@ -396,9 +396,9 @@ namespace jgod { namespace _eval { // Make it clear that this is an implementati
  @param[in] fns Functions (optional)
  @returns result
  */
-_eval::Number eval(std::string str,
-                   _eval::VarMap vars = _eval::VarMap(),
-                   _eval::FnMap fns = _eval::FnMap()) {
+inline _eval::Number eval(std::string str,
+                          _eval::VarMap vars = _eval::VarMap(),
+                          _eval::FnMap fns = _eval::FnMap()) {
   str.erase(std::remove(std::begin(str), std::end(str), ' '), std::end(str)); // Remove whitespace.
   if (str.empty()) return 0; // "null" evaluates to 0.
   _eval::bindBuiltins(vars, fns);
