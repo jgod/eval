@@ -209,19 +209,29 @@ namespace jgod { namespace _eval { // Make it clear that this is an implementati
     // Since we only handle one character at a time, as soon as we know enough
     // about which token the current character is in, we can say for sure that the last
     // token (if any) is done being built by calling FINISH_PREV.
-    const auto FINISH_PREV = [&]() {if (!wip.empty()) {toks.push_back(wip);} wip = ""; number.hasDecimal = false;};
-    const auto SINGLE_CHAR_IMPL = [&](const SubToken c) {FINISH_PREV(); toks.emplace_back(Token(1, c));};
+    const auto FINISH_PREV = [&]() {
+      if (!wip.empty()) toks.push_back(wip);
+      wip = "";
+      number.hasDecimal = false;
+    };
+    const auto SINGLE_CHAR_IMPL = [&](const SubToken c) {
+      FINISH_PREV();
+      toks.emplace_back(Token(1, c));
+    };
     // All multi-character tokens are built the same way, the only thing that
     // differs is how the token should be validated.
     const auto MULTI_CHAR_IMPL = [&](const SubToken c, std::function<bool()> validates) {
-      if (wip.empty() || validates()) wip += c;
-      else {FINISH_PREV(); toks.emplace_back(Token(1, c));}
+      if (wip.empty() || validates()) {
+        wip += c;
+      } else {
+        FINISH_PREV(); toks.emplace_back(Token(1, c));
+      }
     };
 
     for (const auto c : exp) { if (c == ' ') continue;
       // Single-character only tokens: operators and parenthesis
       if (Type::isOperator(c) || Type::isParenthesis(c) || Type::isFunctionSeperator(c)) {
-        if (c == '(') {number.inContext = false;} // Starting new context, reset any flags.
+        if (c == '(') number.inContext = false; // Starting new context, reset any flags.
         else if (Op::isUnary(c) && wip.empty() && !number.inContext) {
           // If a valid unary (+/-) is before any numbers in a context (e.g. (-2 + 3)),
           // prepend an explicit 0 as an easy solution.
@@ -242,8 +252,8 @@ namespace jgod { namespace _eval { // Make it clear that this is an implementati
             return valid;
           });
         }
-        else if (Type::isLetter(c)) {MULTI_CHAR_IMPL(c, [&](){return Type::containsLettersOnly(wip);});}
-        else {FINISH_PREV();}
+        else if (Type::isLetter(c)) MULTI_CHAR_IMPL(c, [&](){return Type::containsLettersOnly(wip);});
+        else FINISH_PREV();
       }
     }
 
@@ -298,7 +308,10 @@ namespace jgod { namespace _eval { // Make it clear that this is an implementati
         opStack.push(token); // push o1 onto the operator stack.
       }
       else if (token == "(") {
-        if (!fnToInvoke.empty()) {expectingArg = true; continue;}
+        if (!fnToInvoke.empty()) {
+          expectingArg = true;
+          continue;
+        }
         opStack.push(token); // If the token is a left parenthesis (i.e. "("), then push it onto the stack.
       }
       else if (token == ")") {
