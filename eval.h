@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef eval_h
-#define eval_h
+#ifndef jgod_eval_h
+#define jgod_eval_h
 
 #include <cmath>
 #include <sstream>
@@ -418,4 +418,4 @@ inline _eval::Number eval(std::string str,
   auto q = _eval::read(_eval::rewriteExpression(str), vars, fns);
   return _eval::queue(q);
 }}
-#endif /* eval_h */
+#endif /* jgod_eval_h */
