@@ -61,4 +61,5 @@ catch (const std::invalid_argument &e) {...}
 
 ## license
 
-MIT
+Copyright Justin Godesky.
+Released under the AGPLv3 License.
